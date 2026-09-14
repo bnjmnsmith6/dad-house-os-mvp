@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a2332" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Dad House OS — Replenish (Loop C draft)</title>
+  <link rel="stylesheet" href="styles.css?v=15" />
+</head>
+<body>
+  <div id="app" class="app">
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+    <div id="banner" class="banner" role="status">Draft only · never charges Amazon</div>
+
+    <!-- Screen: Staples home (S3 couch) -->
+    <section id="screen-staples" class="screen" data-screen="staples">
+      <header class="top">
+        <p class="eyebrow">Dad House OS · Loop C draft</p>
+        <h1>Staples at Dad’s</h1>
+        <p class="sub">Out / Low / Bought — no counting. Couch flow only.</p>
+        <p class="nav-back"><a href="../">← Back to packing (Tonight)</a></p>
+      </header>
+
+      <!-- Fake Today deep-link row -->
+      <div id="alert-row" class="card alert-row hidden">
+        <p class="alert-copy"><strong id="alert-text">Underwear: Out → Order</strong></p>
+        <button type="button" id="btn-alert-order" class="btn btn-primary btn-sm">Order</button>
+      </div>
+
+      <div id="staples-list" class="staples-list"></div>
+
+      <details class="demo-panel card">
+        <summary>Demo toggles</summary>
+        <label class="toggle-row">
+          <input type="checkbox" id="toggle-missing-size" />
+          <span>Missing SizeRecord (soft size path)</span>
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="toggle-stale-size" />
+          <span>Stale size (&gt;90 days) — KC2 hard-nag</span>
+        </label>
+        <button type="button" id="btn-reset" class="btn btn-ghost">Reset fixture</button>
+      </details>
+
+      <p class="foot-note">Status: draft · confirmed · cancelled only. Live Amazon HOLD.</p>
+    </section>
+
+    <!-- Screen: Event sheet (Out / Low / Bought) -->
+    <section id="screen-event" class="screen hidden" data-screen="event">
+      <header class="top top-row">
+        <button type="button" class="btn-back" data-back="staples" aria-label="Back">←</button>
+        <div>
+          <p class="eyebrow">Stock event</p>
+          <h1 id="event-title">Underwear at Dad’s</h1>
+        </div>
+      </header>
+      <p class="helper">No counting. Just tap how it feels.</p>
+      <div class="triad" role="group" aria-label="Stock event">
+        <button type="button" class="btn triad-btn" data-event="out" id="btn-out">Out</button>
+        <button type="button" class="btn triad-btn" data-event="low" id="btn-low">Low</button>
+        <button type="button" class="btn triad-btn" data-event="bought" id="btn-bought">Bought a pack</button>
+      </div>
+      <div id="event-meta" class="card meta-card"></div>
+      <div class="actions">
+        <button type="button" id="btn-review-order" class="btn btn-primary hidden">Review order</button>
+      </div>
+      <p class="foot-note">No qty stepper on this path (KC4).</p>
+    </section>
+
+    <!-- Screen: Soft size (if no SizeRecord) -->
+    <section id="screen-soft-size" class="screen hidden" data-screen="soft-size">
+      <header class="top top-row">
+        <button type="button" class="btn-back" data-back="event" aria-label="Back">←</button>
+        <div>
+          <p class="eyebrow">Size needed</p>
+          <h1>Pick size for cart</h1>
+        </div>
+      </header>
+      <p class="helper">No size on file. Pick one so the draft cart is sized — don’t dead-end.</p>
+      <label class="field">
+        <span>Underwear size</span>
+        <div class="chip-row" id="soft-size-chips" role="group">
+          <button type="button" class="chip" data-size="Youth S">Youth S</button>
+          <button type="button" class="chip" data-size="Youth M">Youth M</button>
+          <button type="button" class="chip selected" data-size="Youth L">Youth L</button>
+          <button type="button" class="chip" data-size="Youth XL">Youth XL</button>
+          <button type="button" class="chip" data-size="10-12">10–12</button>
+          <button type="button" class="chip" data-size="12-14">12–14</button>
+        </div>
+      </label>
+      <div class="actions">
+        <button type="button" id="btn-soft-continue" class="btn btn-primary">Continue</button>
+      </div>
+    </section>
+
+    <!-- Screen: Stale size hard-nag (KC2) -->
+    <section id="screen-stale-size" class="screen hidden" data-screen="stale-size">
+      <header class="top top-row">
+        <button type="button" class="btn-back" data-back="event" aria-label="Back">←</button>
+        <div>
+          <p class="eyebrow">Size check</p>
+          <h1>Size may be last season</h1>
+        </div>
+      </header>
+      <div class="card warn-card">
+        <p class="size-huge" id="stale-size-value">Youth M</p>
+        <p class="measured-huge" id="stale-measured">Measured Dec 1, 2025</p>
+        <p class="warn-body" id="stale-nag-copy">
+          Measured over 90 days ago. Don’t rubber-stamp last season into the cart.
+        </p>
+      </div>
+      <div class="actions">
+        <button type="button" id="btn-update-size" class="btn btn-primary">Update size</button>
+        <button type="button" id="btn-confirm-size-anyway" class="btn btn-secondary">Size still right — continue</button>
+        <button type="button" id="btn-stale-cancel" class="btn btn-ghost">Cancel</button>
+      </div>
+    </section>
+
+    <!-- Screen: Confirm / ReplenishProposal -->
+    <section id="screen-confirm" class="screen hidden" data-screen="confirm">
+      <header class="top top-row">
+        <button type="button" class="btn-back" data-back="staples" aria-label="Back">←</button>
+        <div>
+          <p class="eyebrow">Draft proposal</p>
+          <h1 id="confirm-title">Order underwear?</h1>
+        </div>
+      </header>
+
+      <div class="card size-card">
+        <p class="size-huge" id="confirm-size">Youth L</p>
+        <p class="measured-huge" id="confirm-measured">Measured Sep 1</p>
+        <button type="button" id="btn-wrong-size" class="link-btn">Wrong size</button>
+      </div>
+
+      <div class="card">
+        <p class="cart-line" id="confirm-cart">Amazon · 6-pack · Youth L</p>
+        <p class="caps-line" id="confirm-caps">Qty cap: 2 packs · Spend cap: $28</p>
+        <p class="price-line" id="confirm-price">Estimated $32.00</p>
+        <p class="muted tiny" id="proposal-status">Status: draft · no charge</p>
+      </div>
+
+      <div id="cap-conflict" class="card conflict-card hidden">
+        <p class="conflict-title" id="conflict-title">Can’t confirm · estimated $32 · spend cap $28</p>
+        <p class="caps-line" id="conflict-caps">Qty cap: 2 packs · Spend cap: $28</p>
+        <div class="conflict-actions">
+          <button type="button" id="btn-lower-qty" class="btn btn-secondary">Lower qty</button>
+          <button type="button" id="btn-raise-cap" class="btn btn-secondary">Raise spend cap</button>
+          <button type="button" id="btn-cancel-proposal" class="btn btn-ghost">Cancel</button>
+        </div>
+        <div id="raise-cap-inline" class="raise-cap hidden">
+          <label class="field">
+            <span>New spend cap ($)</span>
+            <input type="number" id="input-raise-cap" min="1" step="1" inputmode="decimal" />
+          </label>
+          <button type="button" id="btn-apply-cap" class="btn btn-secondary">Apply cap</button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="btn-confirm-spend" class="btn btn-primary" disabled>Confirm spend $0.00</button>
+        <button type="button" id="btn-save-draft" class="btn btn-secondary">Save draft</button>
+        <button type="button" id="btn-cancel-confirm" class="btn btn-ghost">Cancel</button>
+      </div>
+      <p class="foot-note">Confirm-gated draft only (KC5). Live Amazon still HOLD.</p>
+    </section>
+  </div>
+
+  <script src="../shared/feedback.js?v=15"></script>
+  <script src="app.js?v=15"></script>
+</body>
+</html>

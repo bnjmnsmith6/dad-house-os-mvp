@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "generated_at": "2026-09-13T22:33:20.391Z",
+    "source": "calendar-handoff-shadow",
+    "matched_event_count": 3,
+    "handoff_count": 3,
+    "mapping": "summary∋handoff|custody|pickup|drop-off|dad night → Handoff; starts_at←start; location_text←location||School curb; direction←pickup→to_dad else unspecified (drop-off→from_dad); overnight←duration≥4h|all-day; kid_ids←name or kid_demo_001"
+  },
+  "handoffs": [
+    {
+      "id": "handoff_cal_chgegvuti48kqh5khaobs0ue",
+      "dad_user_id": "dad_demo_001",
+      "kid_ids": [
+        "kid_demo_001"
+      ],
+      "starts_at": "2026-09-15T22:30:00.000Z",
+      "location_text": "School curb",
+      "direction": "to_dad",
+      "overnight": true,
+      "status": "upcoming",
+      "_source": {
+        "calendar_event_id": "chgegvuti48kqh5khaobs0uetc",
+        "summary": "Dad House handoff — Sam (pickup)",
+        "shadow": true
+      }
+    },
+    {
+      "id": "handoff_cal_v5dpdoohtdt3cjnq381ikdks",
+      "dad_user_id": "dad_demo_001",
+      "kid_ids": [
+        "kid_demo_001"
+      ],
+      "starts_at": "2026-09-17T22:30:00.000Z",
+      "location_text": "Mom's driveway",
+      "direction": "from_dad",
+      "overnight": false,
+      "status": "upcoming",
+      "_source": {
+        "calendar_event_id": "v5dpdoohtdt3cjnq381ikdkscs",
+        "summary": "Dad House handoff — Sam (drop-off)",
+        "shadow": true
+      }
+    },
+    {
+      "id": "handoff_cal_ahb9eee345irmgm64vaqdhee",
+      "dad_user_id": "dad_demo_001",
+      "kid_ids": [
+        "kid_demo_001"
+      ],
+      "starts_at": "2026-09-24T22:30:00.000Z",
+      "location_text": "School curb",
+      "direction": "to_dad",
+      "overnight": true,
+      "status": "upcoming",
+      "_source": {
+        "calendar_event_id": "ahb9eee345irmgm64vaqdheehs",
+        "summary": "Dad House handoff — Sam (dad night)",
+        "shadow": true
+      }
+    }
+  ]
+}

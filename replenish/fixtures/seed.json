@@ -1,0 +1,113 @@
+{
+  "dad_user_id": "dad_demo_001",
+  "kids": [
+    {
+      "id": "kid_demo_001",
+      "dad_user_id": "dad_demo_001",
+      "display_name": "Mia",
+      "dob": "2017-03-08",
+      "grade": "3",
+      "school_name": "Lincoln Elementary",
+      "allergies": [],
+      "contacts": []
+    }
+  ],
+  "size_records": [
+    {
+      "id": "size_demo_001",
+      "kid_id": "kid_demo_001",
+      "shirt": "Youth L",
+      "pant": "12",
+      "shoe": "4Y",
+      "underwear": "Youth L",
+      "measured_at": "2026-09-01T18:00:00Z",
+      "source": "manual",
+      "confirmed_at": "2026-09-01T18:01:00Z",
+      "confirmed_by_user_id": "dad_demo_001"
+    }
+  ],
+  "size_records_stale": [
+    {
+      "id": "size_demo_stale",
+      "kid_id": "kid_demo_001",
+      "shirt": "Youth M",
+      "pant": "10",
+      "shoe": "3Y",
+      "underwear": "Youth M",
+      "measured_at": "2025-12-01T18:00:00Z",
+      "source": "manual",
+      "confirmed_at": "2025-12-01T18:01:00Z",
+      "confirmed_by_user_id": "dad_demo_001"
+    }
+  ],
+  "items": [
+    {
+      "id": "item_underwear",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "kind": "staple",
+      "name": "Underwear",
+      "category": "underwear",
+      "size_ref": "underwear",
+      "default_affinity": "dad_house"
+    },
+    {
+      "id": "item_socks",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "kind": "staple",
+      "name": "Crew socks",
+      "category": "socks",
+      "default_affinity": "dad_house"
+    }
+  ],
+  "house_inventory": [
+    {
+      "id": "inv_underwear",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "item_id": "item_underwear",
+      "staple_category": "underwear",
+      "stock_state": "ok",
+      "last_event_at": "2026-09-10T12:00:00Z",
+      "last_event_kind": "bought",
+      "location_affinity": "dad_house"
+    },
+    {
+      "id": "inv_socks",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "item_id": "item_socks",
+      "staple_category": "socks",
+      "stock_state": "ok",
+      "last_event_at": "2026-09-08T12:00:00Z",
+      "last_event_kind": "ok",
+      "location_affinity": "dad_house"
+    }
+  ],
+  "staple_rules": [
+    {
+      "id": "rule_underwear",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "category": "underwear",
+      "item_id": "item_underwear",
+      "threshold_qty": 4,
+      "order_qty": 2,
+      "max_spend_cents": 2800,
+      "merchant_pref": "amazon",
+      "enabled": true
+    }
+  ],
+  "catalog": {
+    "underwear": {
+      "label": "6-pack underwear",
+      "unit_price_cents": 1600,
+      "pack_label": "6-pack"
+    }
+  },
+  "demo": {
+    "stale_days_threshold": 90,
+    "notes": "order_qty=2 × $16 = $32 > spend cap $28 → force cap-conflict; Lower qty → 1 × $16 = $16 under cap"
+  }
+}

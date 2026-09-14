@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a2332" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Dad House OS — Packing</title>
+  <link rel="stylesheet" href="styles.css?v=15" />
+</head>
+<body>
+  <div id="app" class="app">
+    <div id="banner" class="banner" role="status" aria-live="polite">Checking connection…</div>
+
+    <!-- §0–1 Today -->
+    <section id="screen-today" class="screen" data-screen="today">
+      <header class="top">
+        <p class="eyebrow">Dad House OS</p>
+        <h1>Dad-house ready checklist</h1>
+        <p class="sub">What should leave with you. Not a claim the other house has everything.</p>
+      </header>
+
+      <!-- Empty state (§0) -->
+      <div id="empty-state" class="card empty-card hidden">
+        <h2>No handoff yet</h2>
+        <p class="muted">Add the next pickup/drop-off. You can build the full schedule later.</p>
+        <button type="button" id="btn-open-add-handoff" class="btn btn-primary">Add next handoff</button>
+      </div>
+
+      <!-- Fixture add sheet (§0 ≤2 fields) -->
+      <div id="add-sheet" class="card add-sheet hidden">
+        <h2>Add next handoff</h2>
+        <p class="field-label">When</p>
+        <div class="chip-row" id="when-chips" role="group" aria-label="When">
+          <button type="button" class="chip" data-when="today">Today</button>
+          <button type="button" class="chip chip-active" data-when="tomorrow">Tomorrow</button>
+          <button type="button" class="chip" data-when="pick">Pick date+time</button>
+        </div>
+        <label class="field hidden" id="pick-datetime-wrap">
+          <span>Date + time</span>
+          <input type="datetime-local" id="paste-datetime" />
+        </label>
+        <div id="who-wrap" class="hidden">
+          <p class="field-label">Who</p>
+          <div class="chip-row" id="who-chips" role="group" aria-label="Who"></div>
+        </div>
+        <label class="field">
+          <span>Where (optional)</span>
+          <input type="text" id="paste-location" placeholder="School lot" maxlength="80" />
+        </label>
+        <button type="button" id="btn-save-handoff" class="btn btn-primary">Save handoff</button>
+        <button type="button" id="btn-cancel-add" class="btn btn-ghost">Cancel</button>
+      </div>
+
+      <!-- Handoff header + inline critical (§1) -->
+      <div id="handoff-block" class="hidden">
+        <div id="next-handoff-card" class="card handoff-card"></div>
+        <div id="status-line" class="card status-card"></div>
+        <div id="empty-win" class="card empty-win-card hidden">
+          <h2>You're set for tonight</h2>
+          <p class="muted">Nothing special needs to travel — Dad house already has the doubles. That's a win.</p>
+          <button type="button" id="btn-add-traveler" class="linkish quiet-link">Add a traveler</button>
+        </div>
+        <ul id="today-critical" class="checklist" role="list"></ul>
+        <details id="today-more" class="more-items hidden">
+          <summary id="today-more-summary">More (not blocking lot)</summary>
+          <ul id="today-more-list" class="checklist" role="list"></ul>
+        </details>
+        <div class="actions">
+          <button type="button" id="btn-open-checklist" class="btn btn-secondary">All items</button>
+        </div>
+        <button type="button" id="btn-add-another" class="linkish">Add another handoff</button>
+      </div>
+
+      <p class="foot-note hidden dev-only">Dev: No CustodyPlan / photo / Amazon. Use ?demo=1 for tools. Empty test: ?empty=1</p>
+    </section>
+
+    <!-- §2 Full packing checklist -->
+    <section id="screen-checklist" class="screen hidden" data-screen="checklist">
+      <header class="top top-row">
+        <button type="button" id="btn-back" class="btn-back" aria-label="Back">←</button>
+        <div>
+          <p class="eyebrow" id="checklist-eyebrow">Handoff packing</p>
+          <h1 id="checklist-title">What should leave with you</h1>
+        </div>
+      </header>
+
+      <div id="weather-line" class="weather-line"></div>
+      <div id="checklist-status" class="pct-line"></div>
+
+      <ul id="checklist" class="checklist" role="list"></ul>
+      <details id="more-items" class="more-items hidden">
+        <summary id="more-summary">More (not blocking lot)</summary>
+        <ul id="checklist-more" class="checklist" role="list"></ul>
+      </details>
+
+      <div class="add-one-off card">
+        <label class="field">
+          <span>Add to this handoff…</span>
+          <input type="text" id="one-off-input" placeholder="soccer bag" maxlength="60" autocomplete="off" />
+        </label>
+        <button type="button" id="btn-add-one-off" class="btn btn-secondary">Add</button>
+        <p class="field-hint">No taxonomy. Saved as travel · Confirm with kid.</p>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="btn-regen" class="btn btn-ghost">Update suggestions from weather</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="shared/feedback.js?v=15"></script>
+  <script src="app.js?v=15"></script>
+</body>
+</html>

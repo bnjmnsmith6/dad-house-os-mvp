@@ -1,0 +1,172 @@
+{
+  "dad_user_id": "dad_demo_001",
+  "kids": [
+    {
+      "id": "kid_demo_001",
+      "dad_user_id": "dad_demo_001",
+      "display_name": "Sam",
+      "dob": "2016-04-12",
+      "grade": "4",
+      "school_name": "Lincoln Elementary",
+      "allergies": [
+        "peanuts"
+      ],
+      "meds_note": "EpiPen in backpack",
+      "contacts": [
+        {
+          "label": "school office",
+          "name": "Lincoln Elementary",
+          "phone": "555-0100"
+        }
+      ]
+    }
+  ],
+  "size_records": [
+    {
+      "id": "size_demo_001",
+      "kid_id": "kid_demo_001",
+      "shirt": "YXL",
+      "pant": "14",
+      "shoe": "5Y",
+      "underwear": "10-12",
+      "measured_at": "2026-09-01T18:00:00Z",
+      "source": "manual",
+      "confirmed_at": "2026-09-01T18:01:00Z",
+      "confirmed_by_user_id": "dad_demo_001"
+    }
+  ],
+  "items": [
+    {
+      "id": "item_socks",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "kind": "staple",
+      "name": "Crew socks",
+      "category": "socks",
+      "default_affinity": "dad_house"
+    },
+    {
+      "id": "item_underwear",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "kind": "staple",
+      "name": "Underwear",
+      "category": "underwear",
+      "size_ref": "underwear",
+      "default_affinity": "dad_house"
+    },
+    {
+      "id": "item_jacket",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "kind": "travel",
+      "name": "Rain jacket",
+      "category": "jacket",
+      "size_ref": "shirt",
+      "default_affinity": "follows_kid"
+    },
+    {
+      "id": "item_cleats",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "kind": "sports",
+      "name": "Soccer cleats",
+      "category": "cleats",
+      "size_ref": "shoe",
+      "default_affinity": "follows_kid"
+    },
+    {
+      "id": "item_boots",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "kind": "travel",
+      "name": "Rain boots",
+      "category": "boots",
+      "size_ref": "shoe",
+      "default_affinity": "dad_house"
+    }
+  ],
+  "house_inventory": [
+    {
+      "id": "inv_socks",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "item_id": "item_socks",
+      "staple_category": "socks",
+      "qty_on_hand": 4,
+      "location_affinity": "dad_house",
+      "last_counted_at": "2026-09-10T12:00:00Z",
+      "stock_state": "ok",
+      "last_event_at": "2026-09-10T12:00:00Z"
+    },
+    {
+      "id": "inv_underwear",
+      "dad_user_id": "dad_demo_001",
+      "kid_id": "kid_demo_001",
+      "item_id": "item_underwear",
+      "staple_category": "underwear",
+      "qty_on_hand": 3,
+      "location_affinity": "dad_house",
+      "last_counted_at": "2026-09-10T12:00:00Z",
+      "stock_state": "out",
+      "last_event_at": "2026-09-10T12:00:00Z",
+      "last_event_kind": "out"
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "handoff_demo_001",
+      "dad_user_id": "dad_demo_001",
+      "kid_ids": [
+        "kid_demo_001"
+      ],
+      "starts_at": "2026-09-15T17:30:00Z",
+      "location_text": "School curb",
+      "direction": "to_dad",
+      "overnight": true,
+      "status": "upcoming"
+    },
+    {
+      "id": "handoff_demo_002",
+      "dad_user_id": "dad_demo_001",
+      "kid_ids": [
+        "kid_demo_001"
+      ],
+      "starts_at": "2026-09-17T17:30:00Z",
+      "location_text": "Mom's driveway",
+      "direction": "from_dad",
+      "overnight": false,
+      "status": "upcoming"
+    },
+    {
+      "id": "handoff_demo_003",
+      "dad_user_id": "dad_demo_001",
+      "kid_ids": [
+        "kid_demo_001"
+      ],
+      "starts_at": "2026-09-19T08:00:00Z",
+      "location_text": "Soccer field lot",
+      "direction": "to_dad",
+      "overnight": true,
+      "status": "upcoming"
+    },
+    {
+      "id": "handoff_demo_004",
+      "dad_user_id": "dad_demo_001",
+      "kid_ids": [
+        "kid_demo_001"
+      ],
+      "starts_at": "2026-09-22T17:30:00Z",
+      "location_text": "School curb",
+      "direction": "to_dad",
+      "overnight": true,
+      "status": "upcoming"
+    }
+  ],
+  "weather_stub": {
+    "summary": "Cool rain showers",
+    "temp_f": 52,
+    "rainy": true,
+    "cold": true
+  }
+}
