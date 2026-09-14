@@ -1,5 +1,5 @@
-/* Dad House OS MVP Pilot 0 SW v16 */
-const CACHE = "dadhouse-mvp-pilot0-v16";
+/* Dad House OS MVP Pilot 0 SW v17 */
+const CACHE = "dadhouse-mvp-pilot0-v17";
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,7 +9,7 @@ const ASSETS = [
   "./styles.css?v=15",
   "./sw.js",
   "./shared/feedback.js",
-  "./shared/feedback.js?v=16",
+  "./shared/feedback.js?v=17",
   "./fixtures/seed.json",
   "./fixtures/calendar-handoffs.json",
   "./replenish/",

@@ -1,15 +1,15 @@
 /**
  * Dad House OS — Pilot 0 feedback stub (FB1–FB8)
- * Sticky "Something off?" → sheet → localStorage queue + optional Formsubmit.
- * Empty FEEDBACK_EMAIL = queue-only (no HTTP egress, no mailto / noreply).
- * Never blocks packing. No account required.
+ * Sticky "Something off?" → sheet → localStorage queue + mailto compose.
+ * Orch lock: FEEDBACK_EMAIL="" — no Formsubmit live. Egress = queue + blank-To mailto only.
+ * Never blocks packing. No account required. Do not ask Ben for inbox.
  */
 (function (global) {
   "use strict";
 
   var QUEUE_KEY = "dadhouse_feedback_queue";
-  var APP_VERSION = "pilot0-mvp-2026-09-14b";
-  var FEEDBACK_EMAIL = ""; // PLACEHOLDER — set monitor address when Orch/Ben provides; empty disables HTTP egress
+  var APP_VERSION = "pilot0-mvp-2026-09-14c";
+  var FEEDBACK_EMAIL = ""; // Orch lock — stays empty; empty disables Formsubmit / HTTP egress
   var FORM_ENDPOINT = FEEDBACK_EMAIL ? ("https://formsubmit.co/ajax/" + encodeURIComponent(FEEDBACK_EMAIL)) : "";
 
   function $(id) {
@@ -39,14 +39,6 @@
       if (params.get("offline") === "1") return true;
     } catch (_) {}
     return false;
-  }
-
-  function wantMailto() {
-    try {
-      return new URLSearchParams(location.search).get("mailto") === "1";
-    } catch (_) {
-      return false;
-    }
   }
 
   function currentScreen(opts) {
@@ -235,14 +227,13 @@
     };
   }
 
-  /** Kept for optional ?mailto=1 debug; unused when FEEDBACK_EMAIL empty (prefer queue-only). */
+  /** Blank-To mailto so device mail client opens compose with JSON body. No fixed noreply address. */
   function mailtoCompose(payload) {
-    if (!FEEDBACK_EMAIL) return "";
     var subject = encodeURIComponent(
       "[Dad House] Something off — " + (payload.category || "Other")
     );
     var body = encodeURIComponent(JSON.stringify(payload, null, 2));
-    return "mailto:" + FEEDBACK_EMAIL + "?subject=" + subject + "&body=" + body;
+    return "mailto:?subject=" + subject + "&body=" + body;
   }
 
   function flushQueue() {
@@ -303,10 +294,9 @@
     closeSheet();
     showToast("Thanks — noted for tonight’s list");
 
-    // Prefer queue-only. Never mailto when FORM_ENDPOINT is set.
-    // When FORM_ENDPOINT empty, skip mailto too (avoid noreply) unless explicit ?mailto=1
-    // and FEEDBACK_EMAIL is somehow set later without FORM_ENDPOINT (kept unused normally).
-    if (!FORM_ENDPOINT && wantMailto() && FEEDBACK_EMAIL) {
+    // Default when Formsubmit off: blank-To mailto compose. Never blocks queue/toast.
+    // Never use users.noreply.github.com. Skip mailto when FORM_ENDPOINT is live.
+    if (!FORM_ENDPOINT) {
       try {
         var href = mailtoCompose(payload);
         if (href) {
