@@ -30,8 +30,9 @@ Do **not** ask “would you pay $59?”
 ## Feedback
 
 - Sticky **Something off?** on Today, Checklist, and Replenish confirm.
-- Submit → `localStorage` queue key **`dadhouse_feedback_queue`** + `mailto:` compose ($0 egress).
-- Success toast: *Thanks — noted for tonight’s list*
+- Submit → `localStorage` queue key **`dadhouse_feedback_queue`** (items include `id` + `sent`); toast *Thanks — noted for tonight’s list*.
+- **Formsubmit stub:** `FEEDBACK_EMAIL` in `shared/feedback.js` is currently `""` → queue-only, no HTTP egress, no mailto/noreply popup. When set → `https://formsubmit.co/ajax/{email}` via `flushQueue()` (mount / online / visibility).
+- See **FEEDBACK-INGEST.md**. Researcher drops: `/workspace/research/feedback-raw/`.
 - No account required. Never blocks packing.
 
 ## HOLD (out of scope)

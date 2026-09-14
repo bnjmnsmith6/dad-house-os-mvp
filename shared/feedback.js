@@ -1,14 +1,16 @@
 /**
  * Dad House OS — Pilot 0 feedback stub (FB1–FB8)
- * Sticky "Something off?" → sheet → localStorage queue + mailto egress.
+ * Sticky "Something off?" → sheet → localStorage queue + optional Formsubmit.
+ * Empty FEEDBACK_EMAIL = queue-only (no HTTP egress, no mailto / noreply).
  * Never blocks packing. No account required.
  */
 (function (global) {
   "use strict";
 
   var QUEUE_KEY = "dadhouse_feedback_queue";
-  var APP_VERSION = "pilot0-mvp-2026-09-14";
-  var MAILTO = "bnjmnsmith6@users.noreply.github.com";
+  var APP_VERSION = "pilot0-mvp-2026-09-14b";
+  var FEEDBACK_EMAIL = ""; // PLACEHOLDER — set monitor address when Orch/Ben provides; empty disables HTTP egress
+  var FORM_ENDPOINT = FEEDBACK_EMAIL ? ("https://formsubmit.co/ajax/" + encodeURIComponent(FEEDBACK_EMAIL)) : "";
 
   function $(id) {
     return document.getElementById(id);
@@ -39,6 +41,14 @@
     return false;
   }
 
+  function wantMailto() {
+    try {
+      return new URLSearchParams(location.search).get("mailto") === "1";
+    } catch (_) {
+      return false;
+    }
+  }
+
   function currentScreen(opts) {
     if (opts && typeof opts.getScreen === "function") {
       try {
@@ -60,6 +70,15 @@
       } catch (_) {}
     }
     return null;
+  }
+
+  function newId() {
+    return (
+      "fb-" +
+      Date.now().toString(36) +
+      "-" +
+      Math.random().toString(36).slice(2, 8)
+    );
   }
 
   function ensureStyles() {
@@ -204,6 +223,7 @@
     var lineEl = $("fb-line");
     var line = lineEl ? (lineEl.value || "").trim().slice(0, 140) : "";
     return {
+      id: newId(),
       category: selectedCategory(),
       line: line || null,
       screen: currentScreen(opts),
@@ -211,15 +231,66 @@
       handoff_id: handoffId(opts),
       app_version: APP_VERSION,
       timestamp: new Date().toISOString(),
+      sent: false,
     };
   }
 
+  /** Kept for optional ?mailto=1 debug; unused when FEEDBACK_EMAIL empty (prefer queue-only). */
   function mailtoCompose(payload) {
+    if (!FEEDBACK_EMAIL) return "";
     var subject = encodeURIComponent(
-      "[Dad House feedback] " + (payload.category || "Other")
+      "[Dad House] Something off — " + (payload.category || "Other")
     );
     var body = encodeURIComponent(JSON.stringify(payload, null, 2));
-    return "mailto:" + MAILTO + "?subject=" + subject + "&body=" + body;
+    return "mailto:" + FEEDBACK_EMAIL + "?subject=" + subject + "&body=" + body;
+  }
+
+  function flushQueue() {
+    if (!FORM_ENDPOINT) return;
+    if (isOffline()) return;
+    var q = readQueue();
+    var pending = q.filter(function (item) {
+      return item && !item.sent;
+    });
+    if (!pending.length) return;
+
+    pending.forEach(function (item) {
+      var body = {
+        id: item.id,
+        category: item.category,
+        line: item.line,
+        screen: item.screen,
+        offline: item.offline,
+        handoff_id: item.handoff_id,
+        app_version: item.app_version,
+        timestamp: item.timestamp,
+        _subject: "[Dad House] Something off — " + (item.category || "Other"),
+        source: "dad-house-os-mvp",
+      };
+      try {
+        fetch(FORM_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(body),
+        })
+          .then(function (res) {
+            if (!res || !res.ok) return;
+            var latest = readQueue();
+            var changed = false;
+            for (var i = 0; i < latest.length; i++) {
+              if (latest[i] && latest[i].id === item.id && !latest[i].sent) {
+                latest[i].sent = true;
+                changed = true;
+              }
+            }
+            if (changed) writeQueue(latest);
+          })
+          .catch(function () {});
+      } catch (_) {}
+    });
   }
 
   function submit(opts) {
@@ -229,22 +300,32 @@
     var q = readQueue();
     q.push(payload);
     writeQueue(q);
-    // $0 egress — never block packing if mailto fails
-    try {
-      var a = document.createElement("a");
-      a.href = mailtoCompose(payload);
-      a.rel = "noopener";
-      a.style.display = "none";
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function () {
-        try {
-          a.remove();
-        } catch (_) {}
-      }, 0);
-    } catch (_) {}
     closeSheet();
     showToast("Thanks — noted for tonight’s list");
+
+    // Prefer queue-only. Never mailto when FORM_ENDPOINT is set.
+    // When FORM_ENDPOINT empty, skip mailto too (avoid noreply) unless explicit ?mailto=1
+    // and FEEDBACK_EMAIL is somehow set later without FORM_ENDPOINT (kept unused normally).
+    if (!FORM_ENDPOINT && wantMailto() && FEEDBACK_EMAIL) {
+      try {
+        var href = mailtoCompose(payload);
+        if (href) {
+          var a = document.createElement("a");
+          a.href = href;
+          a.rel = "noopener";
+          a.style.display = "none";
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function () {
+            try {
+              a.remove();
+            } catch (_) {}
+          }, 0);
+        }
+      } catch (_) {}
+    }
+
+    flushQueue();
   }
 
   function setVisible(show) {
@@ -304,15 +385,21 @@
     }
 
     syncVisibility();
-    // Observe screen class changes lightly
     var obs = new MutationObserver(syncVisibility);
     document.querySelectorAll(".screen").forEach(function (el) {
       obs.observe(el, { attributes: true, attributeFilter: ["class"] });
     });
 
+    flushQueue();
+    window.addEventListener("online", flushQueue);
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible") flushQueue();
+    });
+
     global.DadHouseFeedback = global.DadHouseFeedback || {};
     global.DadHouseFeedback.queueKey = QUEUE_KEY;
     global.DadHouseFeedback.readQueue = readQueue;
+    global.DadHouseFeedback.flushQueue = flushQueue;
     global.DadHouseFeedback.syncVisibility = syncVisibility;
     global.DadHouseFeedback.setVisible = setVisible;
   }
@@ -321,6 +408,7 @@
     mount: mount,
     queueKey: QUEUE_KEY,
     readQueue: readQueue,
+    flushQueue: flushQueue,
     APP_VERSION: APP_VERSION,
   };
 })(window);

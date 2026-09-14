@@ -1,5 +1,5 @@
-/* Dad House OS MVP Pilot 0 SW v15 */
-const CACHE = "dadhouse-mvp-pilot0-v15";
+/* Dad House OS MVP Pilot 0 SW v16 */
+const CACHE = "dadhouse-mvp-pilot0-v16";
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,7 +9,7 @@ const ASSETS = [
   "./styles.css?v=15",
   "./sw.js",
   "./shared/feedback.js",
-  "./shared/feedback.js?v=15",
+  "./shared/feedback.js?v=16",
   "./fixtures/seed.json",
   "./fixtures/calendar-handoffs.json",
   "./replenish/",
@@ -128,7 +128,7 @@ self.addEventListener("fetch", (event) => {
           const name = url.pathname.split("/").pop();
           const file =
             (await caches.match("./" + name)) ||
-            (await caches.match("./" + name + "?v=15"));
+            (await caches.match("./" + name + "?v=16"));
           if (file) return withSwHeader(file, "cache");
           return new Response("offline", { status: 503 });
         });
