@@ -2,7 +2,7 @@
 
 Shareable static MVP: **packing-lot** (Tonight / T-12h) + **replenish-draft** + in-product feedback stub.
 
-**Public URL:** https://bnjmnsmith6.github.io/dad-house-os-mvp/
+**Public URL:** _pending GitHub Pages publish_ (expected `https://bnjmnsmith6.github.io/dad-house-os-mvp/`) — see PUBLISH.md
 
 | Surface | Path |
 |---|---|
