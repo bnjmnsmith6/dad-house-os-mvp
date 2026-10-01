@@ -1,5 +1,5 @@
 /* Dad House OS MVP Pilot 0 SW v22 (adds /checklist/) */
-const CACHE = "dadhouse-mvp-pilot0-v22";
+const CACHE = "dadhouse-mvp-pilot0-v23";
 const ASSETS = [
   "./",
   "./index.html",
@@ -20,7 +20,7 @@ const ASSETS = [
   "./checklist/",
   "./checklist/index.html",
   "./checklist/checklist.js?v=4",
-  "./checklist/checklist-data.js?v=5",
+  "./checklist/checklist-data.js?v=6",
   "./checklist/checklist.css?v=4",
   "./checklist/manifest.webmanifest",
   "./checklist/icon.svg",

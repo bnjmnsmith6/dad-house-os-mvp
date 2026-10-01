@@ -119,13 +119,12 @@ window.CHECKLIST_CONTENT = {
       main: [
         { id: "car_seat", name: "Car seat or booster", seat: true, posts: 2, ages: ["baby", "little", "school"], src: "r/SingleDads 61xow3" },
         { id: "stroller", name: "Pram / stroller", posts: 2, ages: ["baby", "little"], src: "r/SingleDads 61xow3" },
-        { id: "furniture", name: "Furniture", note: "dresser, shelves, a spot for their stuff", posts: 2, src: "r/SingleDads 14b184a" }
+        { id: "furniture", name: "Furniture", posts: 2, src: "r/SingleDads 14b184a" }
       ],
       more: [
         { id: "laundry", name: "Laundry and stain products", posts: 1, src: "r/SingleDads 15tr6sd" },
         { id: "tablet", name: "Tablet with games and movies", posts: 1, src: "r/coparenting 137bo9c" },
-        { id: "kid_phone", name: "Their phone and charger", posts: 1, ages: ["teen"], src: "r/Custody wshiju (charger: not evidenced, merged in v1.3)" },
-        { id: "suitcase", name: "Bag for handoffs", posts: 1, src: "r/Divorce iozbxq" }
+        { id: "kid_phone", name: "Their phone and charger", posts: 1, ages: ["teen"], src: "r/Custody wshiju (charger: not evidenced, merged in v1.3)" }
       ]
     }
   ]
