@@ -1,5 +1,5 @@
-/* Dad House OS MVP Pilot 0 SW v19 (adds /checklist/) */
-const CACHE = "dadhouse-mvp-pilot0-v19";
+/* Dad House OS MVP Pilot 0 SW v20 (adds /checklist/) */
+const CACHE = "dadhouse-mvp-pilot0-v20";
 const ASSETS = [
   "./",
   "./index.html",
@@ -19,9 +19,9 @@ const ASSETS = [
   "./replenish/fixtures/seed.json",
   "./checklist/",
   "./checklist/index.html",
-  "./checklist/checklist.js?v=2",
+  "./checklist/checklist.js?v=3",
   "./checklist/checklist-data.js?v=2",
-  "./checklist/checklist.css?v=2",
+  "./checklist/checklist.css?v=3",
   "./checklist/manifest.webmanifest",
   "./checklist/icon.svg",
 ];

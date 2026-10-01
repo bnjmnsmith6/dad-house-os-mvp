@@ -1,18 +1,66 @@
 /* Dad's Second Home Checklist v1 (vanilla JS, static, localStorage only).
- * Content lives in checklist-data.js. No account, no cookies, no third-party scripts.
+ * Content lives in checklist-data.js. No account, no cookies. No third-party script
+ * loads unless the counter is switched on below.
  */
 (function () {
   "use strict";
 
   /* ---------- Signals (locked Sep 27): started, finished, marked_travels, came_back ----------
-   * Stubbed. To switch the counter on: set COUNTER_ENABLED = true and put the counter's
-   * single event call inside send(). Nothing leaves the phone while it is false.
-   * No ID, no date is ever sent: only the event name, the ?ref= partner tag, and for
-   * came_back the travels yes/no. */
+   * Counter: GoatCounter (hosted, free). OFF until BOTH lines below are set:
+   *   GOATCOUNTER_CODE = "<site code>"   (the part before .goatcounter.com)
+   *   COUNTER_ENABLED = true
+   * While off, nothing loads and nothing leaves the phone.
+   * Sent per event: path = title = event name, event = true, referrer = the ?ref= partner tag
+   * (or "" so the browser's referrer URL is never used). We also strip count.js's screen
+   * width (s) and page query string (q). No ID, no date. GoatCounter sets no cookies. */
   var COUNTER_ENABLED = false;
-  var COUNTER_SUPPORTS_PROPS = true; // false => came_back_travels_yes / came_back_travels_no
+  var GOATCOUNTER_CODE = ""; // empty = off
+  var COUNTER_SUPPORTS_PROPS = false; // GoatCounter events carry only a name => came_back_travels_yes / _no
+  var GC_SCRIPT = "https://gc.zgo.at/count.js";
+  var GC_TIMEOUT_MS = 10000;
+  var gc = { status: "idle", queue: [] }; // idle | loading | ready | failed
+  function counterOn() {
+    return COUNTER_ENABLED && /^[a-z0-9-]+$/.test(GOATCOUNTER_CODE);
+  }
+  function gcFlush() {
+    var q = gc.queue;
+    gc.queue = [];
+    q.forEach(function (ev) {
+      try {
+        window.goatcounter.count({ path: ev.name, title: ev.name, event: true, referrer: ev.ref || "" });
+      } catch (_) {}
+    });
+  }
+  function gcFail() { gc.status = "failed"; gc.queue = []; } // blocked or offline: drop silently
+  function gcLoad() {
+    if (gc.status !== "idle") return;
+    gc.status = "loading";
+    try {
+      window.goatcounter = { no_onload: true, no_events: true }; // no automatic pageview / click binding
+      var sc = document.createElement("script");
+      sc.async = true;
+      sc.src = GC_SCRIPT;
+      sc.setAttribute("data-goatcounter", "https://" + GOATCOUNTER_CODE + ".goatcounter.com/count");
+      var timer = setTimeout(function () { if (gc.status === "loading") gcFail(); }, GC_TIMEOUT_MS);
+      sc.onload = function () {
+        clearTimeout(timer);
+        var g = window.goatcounter;
+        if (!g || typeof g.count !== "function") return gcFail();
+        if (typeof g.get_data === "function") {
+          var orig = g.get_data;
+          g.get_data = function (vars) { var d = orig(vars); delete d.s; delete d.q; return d; };
+        }
+        gc.status = "ready";
+        gcFlush();
+      };
+      sc.onerror = function () { clearTimeout(timer); gcFail(); };
+      document.head.appendChild(sc);
+    } catch (_) { gcFail(); }
+  }
   function send(name, props) {
-    /* counter call goes here, e.g. counter.event(name, props) */
+    if (!counterOn() || gc.status === "failed") return;
+    gc.queue.push({ name: name, ref: props && props.ref });
+    if (gc.status === "ready") gcFlush(); else gcLoad();
   }
   var trackLog = (window.__clTrackLog = []); // in-page only, for QA; never stored or sent
   function track(name, props) {
@@ -23,8 +71,8 @@
       delete props.travels;
     }
     trackLog.push({ name: name, props: props });
-    if (window.console && console.debug) console.debug("[checklist track]", name, props, COUNTER_ENABLED ? "" : "(stub)");
-    if (!COUNTER_ENABLED) return;
+    if (window.console && console.debug) console.debug("[checklist track]", name, props, counterOn() ? "" : "(counter off)");
+    if (!counterOn()) return;
     try { send(name, props); } catch (_) {}
   }
 
@@ -176,6 +224,12 @@
     head.appendChild(name);
     if (it.hint) head.appendChild(el("span", "cl-hint", "often travels"));
     li.appendChild(head);
+    var sizeLink = null;
+    if (it.size) {
+      sizeLink = el("button", "cl-size-link");
+      sizeLink.type = "button";
+      head.appendChild(sizeLink);
+    }
     var seg = el("div", "cl-seg");
     seg.setAttribute("role", "group");
     seg.setAttribute("aria-label", it.name);
@@ -203,7 +257,18 @@
     li.appendChild(seg);
     paint();
     if (it.size) {
-      var sz = el("div", "cl-sizes");
+      var sz = el("div", "cl-sizes hidden");
+      var paintLink = function () {
+        var t = sizeText(it.id);
+        sizeLink.textContent = t ? t.replace(/^ \((size )?|\)$/g, "").replace(/^/, "Size ") + " · edit" : "Add sizes";
+        sizeLink.classList.toggle("has", !!t);
+        sizeLink.setAttribute("aria-expanded", sz.classList.contains("hidden") ? "false" : "true");
+      };
+      sizeLink.addEventListener("click", function () {
+        sz.classList.toggle("hidden");
+        paintLink();
+        if (!sz.classList.contains("hidden")) { var f = sz.querySelector("input"); if (f) f.focus(); }
+      });
       for (var i = 0; i < kidCount(); i++) {
         (function (i) {
           var lab = el("label", null, state.kids.length > 1 ? "Kid " + (i + 1) : "Size");
@@ -220,12 +285,14 @@
             arr[i] = inp.value.trim();
             state.sizes[it.id] = arr;
             save();
+            paintLink();
           });
           lab.appendChild(inp);
           sz.appendChild(lab);
         })(i);
       }
       li.appendChild(sz);
+      paintLink();
     }
     return li;
   }
