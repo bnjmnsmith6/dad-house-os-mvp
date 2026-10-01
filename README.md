@@ -8,6 +8,7 @@ Shareable static MVP: **packing-lot** (Tonight / T-12h) + **replenish-draft** + 
 |---|---|
 | Packing (primary) | `/` or `/index.html` |
 | Replenish draft | `/replenish/` |
+| Dad's Second Home Checklist (branch `checklist-v1`, not live) | `/checklist/` · content in `checklist/checklist-data.js` · counter OFF (see below) |
 | Empty-travelers win demo | `/?win=1` or `/?empty_travelers=1` |
 
 ## How to try (3-prompt async)
@@ -51,3 +52,15 @@ cd mvp-ship && python3 -m http.server 8080
 ```
 
 Product brief: `/workspace/product/mvp-ship-brief-feedback-2026-09-14.md`
+
+## Checklist counter (GoatCounter) — how to switch on
+
+The checklist's four events (`started`, `finished`, `marked_travels`, `came_back_travels_yes` / `came_back_travels_no`) go to GoatCounter (hosted, free plan) once switched on. While off, no script loads and nothing leaves the phone.
+
+1. Create the GoatCounter account; note the site code (the `<code>` in `https://<code>.goatcounter.com`).
+2. In `checklist/checklist.js` set both:
+   - `var GOATCOUNTER_CODE = "<code>";`
+   - `var COUNTER_ENABLED = true;`
+3. Bump `checklist.js?v=N` in `checklist/index.html` and `sw.js` (and the `CACHE` name) so phones pick it up.
+
+What is sent per event: path = title = event name, `event=true`, referrer = the stored `?ref=` partner tag (omitted if none; the browser referrer is never used), plus count.js's own bot flag and cache-buster. Screen width and the page query string are stripped. No ID, no date, no cookies, no automatic pageview (`no_onload`). If count.js is blocked or offline, events are dropped silently.
