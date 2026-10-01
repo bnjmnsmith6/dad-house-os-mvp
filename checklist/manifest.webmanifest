@@ -1,0 +1,10 @@
+{
+  "name": "Dad's Second Home Checklist",
+  "short_name": "Second Home",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e131a",
+  "theme_color": "#1a2332",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

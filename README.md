@@ -8,6 +8,7 @@ Shareable static MVP: **packing-lot** (Tonight / T-12h) + **replenish-draft** + 
 |---|---|
 | Packing (primary) | `/` or `/index.html` |
 | Replenish draft | `/replenish/` |
+| Dad's Second Home Checklist (branch `checklist-v1`, not live) | `/checklist/` · content in `checklist/checklist-data.js` · events stubbed (`COUNTER_ENABLED=false` in `checklist/checklist.js`) |
 | Empty-travelers win demo | `/?win=1` or `/?empty_travelers=1` |
 
 ## How to try (3-prompt async)

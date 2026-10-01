@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a2332" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Second Home" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Dad's Second Home Checklist</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="../styles.css?v=15" />
+  <link rel="stylesheet" href="checklist.css?v=1" />
+</head>
+<body>
+  <div id="app" class="app cl-app">
+    <div id="toast" class="cl-toast hidden" role="status" aria-live="polite"></div>
+
+    <!-- Intro -->
+    <section id="screen-intro" class="screen" data-screen="intro">
+      <header class="top">
+        <p class="eyebrow">Dad's Second Home Checklist</p>
+        <h1 class="cl-intro-line">Setting up your place for the kids? Check off what you have.</h1>
+      </header>
+      <div class="cl-actions">
+        <button type="button" id="btn-start" class="btn btn-primary cl-btn-big">Start</button>
+      </div>
+      <p class="cl-fine">Free. No sign-up. Your list stays on this phone.</p>
+    </section>
+
+    <!-- Kids (skippable) -->
+    <section id="screen-kids" class="screen hidden" data-screen="kids">
+      <header class="top">
+        <p class="eyebrow">Quick question · you can skip</p>
+        <h1>How many kids, and how old?</h1>
+        <p class="sub">Only used to hide things that don't fit. No names.</p>
+      </header>
+      <div class="cl-count" role="group" aria-label="How many kids">
+        <button type="button" class="cl-chip" data-count="1">1</button>
+        <button type="button" class="cl-chip" data-count="2">2</button>
+        <button type="button" class="cl-chip" data-count="3">3</button>
+        <button type="button" class="cl-chip" data-count="4">4+</button>
+      </div>
+      <div id="kid-ages" class="cl-kid-ages"></div>
+      <div class="cl-actions cl-row">
+        <button type="button" id="btn-kids-skip" class="btn btn-ghost">Skip</button>
+        <button type="button" id="btn-kids-next" class="btn btn-primary">Next</button>
+      </div>
+    </section>
+
+    <!-- Room (one per screen) -->
+    <section id="screen-room" class="screen hidden" data-screen="room">
+      <header class="cl-room-head">
+        <p class="eyebrow" id="room-step">Room 1 of 7</p>
+        <h1 id="room-name">Kid bedroom</h1>
+        <p class="cl-legend">Tap each: <span class="cl-pill have">Have it</span> → <span class="cl-pill need">Need it</span> → <span class="cl-pill travels">Travels</span></p>
+      </header>
+      <ul id="room-items" class="cl-items"></ul>
+      <details id="room-more" class="cl-more">
+        <summary id="room-more-summary">More ideas</summary>
+        <ul id="room-more-items" class="cl-items"></ul>
+      </details>
+      <div class="cl-actions cl-row cl-sticky">
+        <button type="button" id="btn-room-back" class="btn btn-ghost">Back</button>
+        <button type="button" id="btn-room-next" class="btn btn-primary">Next room</button>
+      </div>
+    </section>
+
+    <!-- Result -->
+    <section id="screen-result" class="screen hidden" data-screen="result">
+      <header class="top">
+        <p class="eyebrow">Your lists</p>
+        <h1>Here's where you stand</h1>
+      </header>
+      <div class="card cl-list-card">
+        <h2>Still need <span id="need-count" class="cl-count-badge">0</span></h2>
+        <ul id="need-list" class="cl-plain"></ul>
+        <button type="button" id="btn-share-need" class="btn btn-secondary cl-share">Share or copy</button>
+      </div>
+      <div class="card cl-list-card">
+        <h2>Travels each handoff <span id="travels-count" class="cl-count-badge">0</span></h2>
+        <ul id="travels-list" class="cl-plain"></ul>
+        <button type="button" id="btn-share-travels" class="btn btn-secondary cl-share">Share or copy</button>
+      </div>
+      <div class="cl-actions cl-row">
+        <button type="button" id="btn-result-edit" class="btn btn-ghost">Change the list</button>
+        <button type="button" id="btn-result-handoff" class="btn btn-primary">Handoff list</button>
+      </div>
+      <p class="cl-fine">Want this list ready before every handoff? Save it to your home screen.</p>
+    </section>
+
+    <!-- Return view: Travels first, one-tap checkoff -->
+    <section id="screen-travels" class="screen hidden" data-screen="travels">
+      <header class="top">
+        <p class="eyebrow">Dad's Second Home Checklist</p>
+        <h1>Travels each handoff</h1>
+        <p class="sub" id="travels-sub">Tap each one as it's packed.</p>
+      </header>
+      <ul id="travels-check" class="checklist cl-checklist"></ul>
+      <div class="cl-actions">
+        <button type="button" id="btn-travels-clear" class="btn btn-ghost">Clear ticks for next handoff</button>
+        <button type="button" id="btn-share-travels2" class="btn btn-secondary">Share or copy</button>
+      </div>
+      <div class="cl-actions cl-row">
+        <button type="button" id="btn-travels-edit" class="btn btn-ghost">Change the list</button>
+        <button type="button" id="btn-travels-result" class="btn btn-ghost">Still need list</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="checklist-data.js?v=1"></script>
+  <script src="checklist.js?v=1"></script>
+</body>
+</html>

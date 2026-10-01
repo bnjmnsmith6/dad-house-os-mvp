@@ -1,5 +1,5 @@
-/* Dad House OS MVP Pilot 0 SW v17 */
-const CACHE = "dadhouse-mvp-pilot0-v17";
+/* Dad House OS MVP Pilot 0 SW v18 (adds /checklist/) */
+const CACHE = "dadhouse-mvp-pilot0-v18";
 const ASSETS = [
   "./",
   "./index.html",
@@ -17,6 +17,13 @@ const ASSETS = [
   "./replenish/app.js",
   "./replenish/styles.css",
   "./replenish/fixtures/seed.json",
+  "./checklist/",
+  "./checklist/index.html",
+  "./checklist/checklist.js?v=1",
+  "./checklist/checklist-data.js?v=1",
+  "./checklist/checklist.css?v=1",
+  "./checklist/manifest.webmanifest",
+  "./checklist/icon.svg",
 ];
 
 self.addEventListener("install", (event) => {
@@ -122,6 +129,13 @@ self.addEventListener("fetch", (event) => {
           return withSwHeader(res, "network");
         })
         .catch(async () => {
+          // Checklist pages (incl. ?ref= links) fall back to the checklist shell, not the MVP.
+          const inChecklist = url.pathname.includes("/checklist/");
+          if (inChecklist && req.mode === "navigate") {
+            const cl =
+              (await caches.match("./checklist/index.html")) || (await caches.match("./checklist/"));
+            if (cl) return withSwHeader(cl, "cache");
+          }
           const page =
             (await caches.match("./index.html")) || (await caches.match("./"));
           if (page) return withSwHeader(page, "cache");
