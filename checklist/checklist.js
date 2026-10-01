@@ -92,10 +92,10 @@
   function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} }
 
   var state = read(KEY, null) || {
-    v: 1, started: false, finished: false, kids: [], marks: {}, sizes: {}, packed: {},
+    v: 1, started: false, finished: false, kids: [], marks: {}, sizes: {}, seats: {}, packed: {},
     room: 0, lastVisit: null, ref: null
   };
-  ["marks", "sizes", "packed"].forEach(function (k) { if (!state[k] || typeof state[k] !== "object") state[k] = {}; });
+  ["marks", "sizes", "seats", "packed"].forEach(function (k) { if (!state[k] || typeof state[k] !== "object") state[k] = {}; });
   if (!Array.isArray(state.kids)) state.kids = [];
   var fired = read(EVENTS_KEY, {});
   function save() { write(KEY, state); }
@@ -139,17 +139,55 @@
     if (!it.ages || !b.length) return true;
     return b.some(function (x) { return it.ages.indexOf(x) !== -1; });
   }
+  function inMain(it) {
+    // mainAges: main list only if a kid is in one of those bands; else (incl. ages skipped) More ideas
+    if (!it.mainAges) return true;
+    return bands().some(function (x) { return it.mainAges.indexOf(x) !== -1; });
+  }
   function visibleRooms() {
     return CONTENT.rooms.map(function (r) {
-      return { id: r.id, name: r.name, main: r.main.filter(fits), more: r.more.filter(fits) };
+      var main = r.main.filter(fits);
+      var demoted = main.filter(function (it) { return !inMain(it); });
+      return {
+        id: r.id, name: r.name,
+        main: main.filter(inMain),
+        more: demoted.concat(r.more.filter(fits))
+      };
     }).filter(function (r) { return r.main.length || r.more.length; });
   }
   function kidCount() { return Math.max(1, state.kids.length); }
-  function kidLabel(i) {
-    if (state.kids.length < 2) return "Size";
+  function tagged() { return state.kids.length > 1; }
+  function kidName(i) {
     var k = state.kids[i] || {};
-    var band = CONTENT.ageBands.filter(function (b) { return b.id === k.age; })[0];
-    return "Kid " + (i + 1) + (band ? " (" + band.label.split(" ")[0].toLowerCase() + ")" : "");
+    return (k.name && String(k.name).trim()) || "Kid " + (i + 1);
+  }
+  function kidLabel(i) { return tagged() ? kidName(i) : "Size"; }
+  // Kids a per-kid field applies to (e.g. diapers only for baby/little kids). Unknown age = applies.
+  function kidsFor(it) {
+    var out = [];
+    for (var i = 0; i < kidCount(); i++) {
+      var k = state.kids[i];
+      if (!it.ages || !k || !k.age || it.ages.indexOf(k.age) !== -1) out.push(i);
+    }
+    return out;
+  }
+  var SEAT_CHOICES = [["seat", "Car seat"], ["booster", "Booster"], ["none", "Neither"]];
+  function seatWord(v) { return v === "seat" ? "car seat" : v === "booster" ? "booster" : v === "none" ? "neither" : ""; }
+  // Per-kid detail parts, tagged by kid when there's more than one kid: "Kid 1 size 10", "Sam booster"
+  function detailParts(id) {
+    var it = itemById[id], parts = [];
+    if (!it) return parts;
+    kidsFor(it).forEach(function (i) {
+      var v = "";
+      if (it.size) { var sz = (state.sizes[id] || [])[i]; if (sz) v = "size " + sz; }
+      if (it.seat) { var st = (state.seats[id] || [])[i]; if (st && st !== "none") v = seatWord(st); }
+      if (v) parts.push(tagged() ? kidName(i) + " " + v : v);
+    });
+    return parts;
+  }
+  function detailText(id) {
+    var p = detailParts(id);
+    return p.length ? " (" + p.join(", ") + ")" : "";
   }
   function orderedIds(stateName) {
     var out = [];
@@ -158,16 +196,6 @@
     });
     return out;
   }
-  function sizeText(id) {
-    var s = state.sizes[id];
-    if (!s) return "";
-    var parts = [];
-    for (var i = 0; i < kidCount(); i++) {
-      if (s[i]) parts.push(state.kids.length > 1 ? "kid " + (i + 1) + ": " + s[i] : s[i]);
-    }
-    return parts.length ? " (size " + parts.join(", ") + ")" : "";
-  }
-
   /* ---------- DOM ---------- */
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) {
@@ -203,6 +231,14 @@
     state.kids.forEach(function (k, i) {
       var row = el("div", "cl-kid-row");
       row.appendChild(el("p", null, state.kids.length > 1 ? "Kid " + (i + 1) : "Age"));
+      var nm = el("input", "cl-kid-name");
+      nm.type = "text";
+      nm.maxLength = 16;
+      nm.autocomplete = "off";
+      nm.placeholder = "Name or nickname (optional)";
+      nm.value = k.name || "";
+      nm.setAttribute("aria-label", "Kid " + (i + 1) + " name (optional, stays on this phone)");
+      nm.addEventListener("input", function () { k.name = nm.value.trim(); save(); });
       var g = el("div", "cl-bands");
       CONTENT.ageBands.forEach(function (b) {
         var c = el("button", "cl-chip" + (k.age === b.id ? " on" : ""), b.label);
@@ -211,6 +247,7 @@
         g.appendChild(c);
       });
       row.appendChild(g);
+      if (state.kids.length > 1) row.appendChild(nm);
       wrap.appendChild(row);
     });
   }
@@ -223,9 +260,10 @@
     var name = el("span", "cl-name", it.name);
     head.appendChild(name);
     if (it.hint) head.appendChild(el("span", "cl-hint", "often travels"));
+    if (it.note) head.appendChild(el("span", "cl-note", it.note));
     li.appendChild(head);
     var sizeLink = null;
-    if (it.size) {
+    if (it.size || it.seat) {
       sizeLink = el("button", "cl-size-link");
       sizeLink.type = "button";
       head.appendChild(sizeLink);
@@ -256,11 +294,13 @@
     });
     li.appendChild(seg);
     paint();
-    if (it.size) {
+    if (it.size || it.seat) {
       var sz = el("div", "cl-sizes hidden");
       var paintLink = function () {
-        var t = sizeText(it.id);
-        sizeLink.textContent = t ? t.replace(/^ \((size )?|\)$/g, "").replace(/^/, "Size ") + " · edit" : "Add sizes";
+        var parts = detailParts(it.id);
+        var t = parts.join(", ");
+        if (t && !tagged()) t = t.charAt(0).toUpperCase() + t.slice(1);
+        sizeLink.textContent = t ? t + " · edit" : (it.size ? "Add sizes" : (tagged() ? "Which, per kid?" : "Which one?"));
         sizeLink.classList.toggle("has", !!t);
         sizeLink.setAttribute("aria-expanded", sz.classList.contains("hidden") ? "false" : "true");
       };
@@ -269,9 +309,9 @@
         paintLink();
         if (!sz.classList.contains("hidden")) { var f = sz.querySelector("input"); if (f) f.focus(); }
       });
-      for (var i = 0; i < kidCount(); i++) {
-        (function (i) {
-          var lab = el("label", null, state.kids.length > 1 ? "Kid " + (i + 1) : "Size");
+      kidsFor(it).forEach(function (i) {
+        if (it.size) {
+          var lab = el("label", null, kidLabel(i));
           var inp = el("input");
           inp.type = "text";
           inp.inputMode = "text";
@@ -279,7 +319,7 @@
           inp.placeholder = "optional";
           inp.autocomplete = "off";
           inp.value = (state.sizes[it.id] && state.sizes[it.id][i]) || "";
-          inp.setAttribute("aria-label", it.name + " " + kidLabel(i).toLowerCase() + " (optional)");
+          inp.setAttribute("aria-label", it.name + " size" + (tagged() ? " for " + kidName(i) : "") + " (optional)");
           inp.addEventListener("input", function () {
             var arr = state.sizes[it.id] || [];
             arr[i] = inp.value.trim();
@@ -289,8 +329,35 @@
           });
           lab.appendChild(inp);
           sz.appendChild(lab);
-        })(i);
-      }
+        } else {
+          var row = el("div", "cl-seat-row");
+          if (tagged()) row.appendChild(el("span", "cl-seat-kid", kidName(i)));
+          var g = el("div", "cl-seat-opts");
+          g.setAttribute("role", "group");
+          g.setAttribute("aria-label", "Car seat or booster" + (tagged() ? " for " + kidName(i) : ""));
+          SEAT_CHOICES.forEach(function (c) {
+            var b = el("button", "cl-seat-opt", c[1]);
+            b.type = "button";
+            b.setAttribute("data-seat", c[0]);
+            var cur = (state.seats[it.id] || [])[i];
+            b.setAttribute("aria-pressed", cur === c[0] ? "true" : "false");
+            b.addEventListener("click", function () {
+              var arr = state.seats[it.id] || [];
+              arr[i] = arr[i] === c[0] ? null : c[0];
+              state.seats[it.id] = arr;
+              save();
+              g.querySelectorAll(".cl-seat-opt").forEach(function (x) {
+                x.setAttribute("aria-pressed", x.getAttribute("data-seat") === arr[i] ? "true" : "false");
+              });
+              paintLink();
+            });
+            g.appendChild(b);
+          });
+          row.appendChild(g);
+          sz.appendChild(row);
+        }
+      });
+      if (it.seat) sz.classList.add("cl-seats");
       li.appendChild(sz);
       paintLink();
     }
@@ -322,7 +389,7 @@
   function fillList(ul, ids, emptyText) {
     ul.innerHTML = "";
     if (!ids.length) { ul.appendChild(el("li", "cl-empty", emptyText)); return; }
-    ids.forEach(function (id) { ul.appendChild(el("li", null, itemById[id].name + sizeText(id))); });
+    ids.forEach(function (id) { ul.appendChild(el("li", null, itemById[id].name + detailText(id))); });
   }
   function renderResult() {
     var need = orderedIds("need"), trav = orderedIds("travels");
@@ -330,6 +397,7 @@
     $("travels-count").textContent = trav.length;
     fillList($("need-list"), need, "Nothing marked Need it.");
     fillList($("travels-list"), trav, "Nothing marked Travels.");
+    $("travels-long").classList.toggle("hidden", trav.length <= 8); // text only; never changes marks, share, or events
     $("btn-share-need").disabled = !need.length;
     $("btn-share-travels").disabled = !trav.length;
     $("btn-result-handoff").classList.toggle("hidden", !trav.length);
@@ -337,7 +405,7 @@
   function shareText(kind) {
     var ids = orderedIds(kind);
     var title = kind === "need" ? "Still need" : "Travels each handoff";
-    return title + ":\n" + ids.map(function (id) { return "- " + itemById[id].name + sizeText(id); }).join("\n");
+    return title + ":\n" + ids.map(function (id) { return "- " + itemById[id].name + detailText(id); }).join("\n");
   }
   function copyFallback(text) {
     var ta = el("textarea");
@@ -386,7 +454,7 @@
       li.appendChild(el("span", "check-toggle"));
       var body = el("div", "item-body");
       body.appendChild(el("span", "item-name", itemById[id].name));
-      var sz = sizeText(id);
+      var sz = detailText(id);
       if (sz) body.appendChild(el("span", "item-meta", sz.replace(/^ \(|\)$/g, "")));
       li.appendChild(body);
       function toggle() {

@@ -5,14 +5,18 @@
  *   name     shown to the dad (dads' own words where quotes give them)
  *   posts    posts naming it, EXCLUDING who-pays-only posts (evidence §3 "excl. cost-only")
  *   size     true = optional size field (clothes, shoes, diapers only)
- *   hint     true = small "often travels" hint (backpack/school things, medication, event costumes)
+ *   hint     true = small "often travels" hint. Product, Oct 1: ONLY School backpack and Prescribed medication.
  *   ages     optional: only show for these age bands (baby, little, school, teen). Omit = all ages.
+ *   mainAges optional (main items only): show in the main list only if a kid is in one of these
+ *            bands; otherwise (other fitting bands, or ages skipped) it moves under More ideas.
+ *   note     optional short grey example line under the name
+ *   seat     true = per-kid choice Car seat / Booster / Neither (stored on the phone only)
  *   src      quote ref (subreddit + post id) or "not evidenced" (data only; never shown in the UI)
  *   safety   n=1 item kept in main because leaving it out could hurt a kid (Product rule 2)
  * main = shown in the room. more = behind the collapsed "More ideas" row.
  */
 window.CHECKLIST_CONTENT = {
-  version: "content-v1.1-2026-10-01",
+  version: "content-v1.2-2026-10-01",
   ageBands: [
     { id: "baby", label: "Baby" },
     { id: "little", label: "Little (toddler to 5)" },
@@ -29,7 +33,7 @@ window.CHECKLIST_CONTENT = {
         { id: "crib", name: "Crib (safe place to sleep)", posts: 1, ages: ["baby"], safety: true, src: "r/SingleDads wfqdvu" }
       ],
       more: [
-        { id: "bedding_same", name: "Same bedding as at the other home", posts: 1, src: "r/SingleDads o6mjr7" },
+        { id: "bedding_same", name: "Bedding they're used to", posts: 1, src: "r/SingleDads o6mjr7" },
         { id: "temp_monitor", name: "Room temperature monitor", posts: 1, ages: ["baby"], src: "r/SingleDads o6mjr7" },
         { id: "nightlight", name: "Nightlight", posts: 0, src: "not evidenced" },
         { id: "comfort_item", name: "A comfort item or lovey", posts: 0, src: "not evidenced" },
@@ -43,7 +47,7 @@ window.CHECKLIST_CONTENT = {
         { id: "toothbrush", name: "Toothbrush", posts: 2, src: "r/SingleDads r5ockr" },
         { id: "soap", name: "Soap", posts: 2, src: "r/coparenting 1fr67qy" },
         { id: "bathroom_stuff", name: "Other bathroom stuff (toiletries)", posts: 3, src: "r/Divorce iozbxq" },
-        { id: "pads", name: "Pads (for her period)", posts: 3, ages: ["school", "teen"], src: "r/SingleDads i72xng" }
+        { id: "pads", name: "Pads (if she's started her period)", posts: 3, ages: ["school", "teen"], mainAges: ["teen"], src: "r/SingleDads i72xng" }
       ],
       more: [
         { id: "wipes", name: "Wipes", posts: 1, ages: ["baby", "little"], src: "r/SingleDads 1tggnhn" },
@@ -57,7 +61,7 @@ window.CHECKLIST_CONTENT = {
       id: "kitchen", name: "Kitchen",
       main: [
         { id: "snacks", name: "Snacks", posts: 4, src: "r/daddit 189soa1" },
-        { id: "food", name: "Food they'll eat", posts: 3, src: "r/SingleDads 1koffd0" }
+        { id: "food", name: "Food they'll eat", note: "breakfast, a few dinners they like", posts: 3, src: "r/SingleDads 1koffd0" }
       ],
       more: [
         { id: "milk", name: "Milk for a baby", posts: 1, ages: ["baby"], src: "r/SingleDads o6mjr7" },
@@ -71,7 +75,7 @@ window.CHECKLIST_CONTENT = {
       main: [
         { id: "clothes", name: "Clothes", posts: 37, size: true, src: "r/mexico 1f2tpko; r/Divorce iozbxq" },
         { id: "shoes", name: "Shoes", posts: 12, size: true, src: "r/Divorce 1ub5jv4" },
-        { id: "costume", name: "Recital or activity costume and shoes", posts: 2, hint: true, src: "r/SingleDads 1phzo76" }
+        { id: "costume", name: "Recital or activity costume and shoes", posts: 2, src: "r/SingleDads 1phzo76" }
       ],
       more: [
         { id: "winter_gear", name: "Winter coat, rain coat, snow boots, snow pants", posts: 1, src: "r/coparenting 1fr67qy" },
@@ -83,17 +87,17 @@ window.CHECKLIST_CONTENT = {
     {
       id: "school", name: "School",
       main: [
-        { id: "backpack", name: "School backpack", posts: 4, hint: true, ages: ["little", "school", "teen"], src: "r/Custody 1srqtxd" },
-        { id: "school_supplies", name: "School supplies (pencils, glue sticks, markers)", posts: 7, hint: true, ages: ["little", "school", "teen"], src: "r/SingleDads 1eq03dh" },
-        { id: "lunches", name: "School lunches or lunch account money", posts: 3, ages: ["little", "school", "teen"], src: "r/Divorce 1bm3mps" }
+        { id: "backpack", name: "School backpack", posts: 4, hint: true, ages: ["school", "teen"], src: "r/Custody 1srqtxd" },
+        { id: "school_supplies", name: "School supplies (pencils, glue sticks, markers)", posts: 7, ages: ["school", "teen"], src: "r/SingleDads 1eq03dh" },
+        { id: "lunches", name: "School lunches or lunch account money", posts: 3, ages: ["school", "teen"], src: "r/Divorce 1bm3mps" }
       ],
       more: [
-        { id: "homework", name: "Homework, notebooks, reading books, school laptop", posts: 1, hint: true, ages: ["school", "teen"], src: "r/Custody wshiju" },
-        { id: "pe_kit", name: "PE kit", posts: 1, hint: true, ages: ["school", "teen"], src: "r/SingleDads 1lp94ec" },
-        { id: "uniform", name: "School uniform", posts: 1, ages: ["little", "school", "teen"], src: "r/SingleDads 1ejx3sd" },
-        { id: "forms", name: "Signed school forms", posts: 1, hint: true, ages: ["little", "school", "teen"], src: "r/SingleDads 1p0prju" },
-        { id: "water_bottle", name: "Water bottle", posts: 1, src: "r/coparenting 1fr67qy" },
-        { id: "school_contacts", name: "School contact list", posts: 0, ages: ["little", "school", "teen"], src: "not evidenced" }
+        { id: "homework", name: "Homework, notebooks, reading books, school laptop", posts: 1, ages: ["school", "teen"], src: "r/Custody wshiju" },
+        { id: "pe_kit", name: "PE kit", posts: 1, ages: ["school", "teen"], src: "r/SingleDads 1lp94ec" },
+        { id: "uniform", name: "School uniform", posts: 1, ages: ["school", "teen"], src: "r/SingleDads 1ejx3sd" },
+        { id: "forms", name: "Signed school forms", posts: 1, ages: ["school", "teen"], src: "r/SingleDads 1p0prju" },
+        { id: "water_bottle", name: "Water bottle", posts: 1, ages: ["school", "teen"], src: "r/coparenting 1fr67qy" },
+        { id: "school_contacts", name: "School contact list", posts: 0, ages: ["school", "teen"], src: "not evidenced" }
       ]
     },
     {
@@ -113,9 +117,9 @@ window.CHECKLIST_CONTENT = {
     {
       id: "other", name: "Other",
       main: [
-        { id: "car_seat", name: "Car seat", posts: 2, ages: ["baby", "little", "school"], src: "r/SingleDads 61xow3" },
+        { id: "car_seat", name: "Car seat or booster", seat: true, posts: 2, ages: ["baby", "little", "school"], src: "r/SingleDads 61xow3" },
         { id: "stroller", name: "Pram / stroller", posts: 2, ages: ["baby", "little"], src: "r/SingleDads 61xow3" },
-        { id: "furniture", name: "Furniture", posts: 2, src: "r/SingleDads 14b184a" }
+        { id: "furniture", name: "Furniture", note: "dresser, shelves, a spot for their stuff", posts: 2, src: "r/SingleDads 14b184a" }
       ],
       more: [
         { id: "laundry", name: "Laundry and stain products", posts: 1, src: "r/SingleDads 15tr6sd" },

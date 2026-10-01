@@ -4,13 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#1a2332" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Second Home" />
   <meta name="referrer" content="no-referrer" />
   <title>Dad's Second Home Checklist</title>
   <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="../styles.css?v=15" />
-  <link rel="stylesheet" href="checklist.css?v=3" />
+  <link rel="stylesheet" href="checklist.css?v=4" />
 </head>
 <body>
   <div id="app" class="app cl-app">
@@ -80,6 +82,7 @@
       <div class="card cl-list-card">
         <h2>Travels each handoff <span id="travels-count" class="cl-count-badge">0</span></h2>
         <ul id="travels-list" class="cl-plain"></ul>
+        <p id="travels-long" class="cl-quiet hidden">That's a lot to carry each time. Could some of these just stay at your place?</p>
         <button type="button" id="btn-share-travels" class="btn btn-secondary cl-share">Share or copy</button>
       </div>
       <div class="cl-actions cl-row">
@@ -108,7 +111,7 @@
     </section>
   </div>
 
-  <script src="checklist-data.js?v=2"></script>
-  <script src="checklist.js?v=3"></script>
+  <script src="checklist-data.js?v=4"></script>
+  <script src="checklist.js?v=4"></script>
 </body>
 </html>
