@@ -7,11 +7,12 @@
  *   size     true = optional size field (clothes, shoes, diapers only)
  *   hint     true = small "often travels" hint (backpack/school things, medication, event costumes)
  *   ages     optional: only show for these age bands (baby, little, school, teen). Omit = all ages.
- *   src      quote ref (subreddit + post id) or "not evidenced"
+ *   src      quote ref (subreddit + post id) or "not evidenced" (data only; never shown in the UI)
+ *   safety   n=1 item kept in main because leaving it out could hurt a kid (Product rule 2)
  * main = shown in the room. more = behind the collapsed "More ideas" row.
  */
 window.CHECKLIST_CONTENT = {
-  version: "content-v1-2026-10-01",
+  version: "content-v1.1-2026-10-01",
   ageBands: [
     { id: "baby", label: "Baby" },
     { id: "little", label: "Little (toddler to 5)" },
@@ -24,12 +25,11 @@ window.CHECKLIST_CONTENT = {
       main: [
         { id: "own_space", name: "Their own room or space", posts: 7, src: "r/DerechoGenial gvvden" },
         { id: "toys", name: "Toys", posts: 6, src: "r/Custody 15p63qn" },
-        { id: "bed", name: "Bed", posts: 3, src: "r/DivorcedDads 1wk1aj3" }
+        { id: "bed", name: "Bed", posts: 3, ages: ["little", "school", "teen"], src: "r/DivorcedDads 1wk1aj3" },
+        { id: "crib", name: "Crib (safe place to sleep)", posts: 1, ages: ["baby"], safety: true, src: "r/SingleDads wfqdvu" }
       ],
       more: [
-        { id: "crib", name: "Crib", posts: 1, ages: ["baby"], src: "r/SingleDads wfqdvu" },
         { id: "bedding_same", name: "Same bedding as at the other home", posts: 1, src: "r/SingleDads o6mjr7" },
-        { id: "mattress", name: "Mattress", posts: 0, src: "r/Divorce 1ub5jv4 (who-pays only)" },
         { id: "temp_monitor", name: "Room temperature monitor", posts: 1, ages: ["baby"], src: "r/SingleDads o6mjr7" },
         { id: "nightlight", name: "Nightlight", posts: 0, src: "not evidenced" },
         { id: "comfort_item", name: "A comfort item or lovey", posts: 0, src: "not evidenced" },
@@ -100,7 +100,7 @@ window.CHECKLIST_CONTENT = {
       id: "medical", name: "Medical & documents",
       main: [
         { id: "medication", name: "Prescribed medication", posts: 1, hint: true, safety: true, src: "r/Custody 1r6up5b" },
-        { id: "sick_day_meds", name: "Sick-day medicine at your place (like Calpol)", posts: 1, safety: true, src: "r/SingleDads 61xow3" }
+        { id: "sick_day_meds", name: "Fever and pain medicine", posts: 1, safety: true, src: "r/SingleDads 61xow3" }
       ],
       more: [
         { id: "rx_card", name: "Health insurance / prescription card", posts: 1, src: "r/Custody 17opsme" },
@@ -120,9 +120,8 @@ window.CHECKLIST_CONTENT = {
       more: [
         { id: "laundry", name: "Laundry and stain products", posts: 1, src: "r/SingleDads 15tr6sd" },
         { id: "tablet", name: "Tablet with games and movies", posts: 1, src: "r/coparenting 137bo9c" },
-        { id: "airtag", name: "AirTag in the backpack", posts: 1, hint: true, ages: ["school", "teen"], src: "r/coparenting 1n80h94" },
         { id: "kid_phone", name: "Their phone", posts: 1, ages: ["school", "teen"], src: "r/Custody wshiju" },
-        { id: "suitcase", name: "Suitcase for handoffs", posts: 1, src: "r/Divorce iozbxq" },
+        { id: "suitcase", name: "Bag for handoffs", posts: 1, src: "r/Divorce iozbxq" },
         { id: "charger", name: "Phone or tablet charger", posts: 0, src: "not evidenced" }
       ]
     }

@@ -34,8 +34,8 @@
   var DAY = 86400000;
   var RETURN_GAP = 3 * DAY;
   var CONTENT = window.CHECKLIST_CONTENT;
-  var STATES = ["", "have", "need", "travels"];
-  var LABEL = { "": "Tap", have: "Have it", need: "Need it", travels: "Travels" };
+  var CHOICES = ["have", "need", "travels"];
+  var SHORT = { have: "Have", need: "Need", travels: "Travels" };
 
   function read(k, fallback) {
     try { var v = JSON.parse(localStorage.getItem(k)); return v && typeof v === "object" ? v : fallback; }
@@ -171,35 +171,42 @@
   function itemRow(it) {
     var li = el("li", "cl-item");
     li.setAttribute("data-id", it.id);
-    var btn = el("button", "cl-tap");
-    btn.type = "button";
-    var left = el("span", "cl-name", it.name);
-    if (it.hint) left.appendChild(el("span", "cl-hint", "often travels"));
-    var st = el("span", "cl-state");
-    btn.appendChild(left);
-    btn.appendChild(st);
+    var head = el("div", "cl-head");
+    var name = el("span", "cl-name", it.name);
+    head.appendChild(name);
+    if (it.hint) head.appendChild(el("span", "cl-hint", "often travels"));
+    li.appendChild(head);
+    var seg = el("div", "cl-seg");
+    seg.setAttribute("role", "group");
+    seg.setAttribute("aria-label", it.name);
+    var btns = {};
     function paint() {
       var s = state.marks[it.id] || "";
       li.className = "cl-item" + (s ? " s-" + s : "");
-      st.textContent = LABEL[s];
-      btn.setAttribute("aria-label", it.name + ": " + (s ? LABEL[s] : "not marked") + ". Tap to change.");
+      CHOICES.forEach(function (c) { btns[c].setAttribute("aria-pressed", s === c ? "true" : "false"); });
     }
-    btn.addEventListener("click", function () {
-      var s = state.marks[it.id] || "";
-      var next = STATES[(STATES.indexOf(s) + 1) % STATES.length];
-      if (next) state.marks[it.id] = next; else delete state.marks[it.id];
-      if (next !== "travels") delete state.packed[it.id];
-      save();
-      paint();
-      if (next === "travels") once("marked_travels");
+    CHOICES.forEach(function (c) {
+      var b = el("button", "cl-opt cl-opt-" + c, SHORT[c]);
+      b.type = "button";
+      b.setAttribute("data-choice", c);
+      b.addEventListener("click", function () {
+        var next = state.marks[it.id] === c ? "" : c; // tap the selected one again to clear
+        if (next) state.marks[it.id] = next; else delete state.marks[it.id];
+        if (next !== "travels") delete state.packed[it.id];
+        save();
+        paint();
+        if (next === "travels") once("marked_travels");
+      });
+      btns[c] = b;
+      seg.appendChild(b);
     });
+    li.appendChild(seg);
     paint();
-    li.appendChild(btn);
     if (it.size) {
       var sz = el("div", "cl-sizes");
       for (var i = 0; i < kidCount(); i++) {
         (function (i) {
-          var lab = el("label", null, kidLabel(i));
+          var lab = el("label", null, state.kids.length > 1 ? "Kid " + (i + 1) : "Size");
           var inp = el("input");
           inp.type = "text";
           inp.inputMode = "text";
