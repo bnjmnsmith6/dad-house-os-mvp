@@ -16,7 +16,7 @@
  * main = shown in the room. more = behind the collapsed "More ideas" row.
  */
 window.CHECKLIST_CONTENT = {
-  version: "content-v1.2-2026-10-01",
+  version: "content-v1.3-2026-10-01",
   ageBands: [
     { id: "baby", label: "Baby" },
     { id: "little", label: "Little (toddler to 5)" },
@@ -124,9 +124,8 @@ window.CHECKLIST_CONTENT = {
       more: [
         { id: "laundry", name: "Laundry and stain products", posts: 1, src: "r/SingleDads 15tr6sd" },
         { id: "tablet", name: "Tablet with games and movies", posts: 1, src: "r/coparenting 137bo9c" },
-        { id: "kid_phone", name: "Their phone", posts: 1, ages: ["school", "teen"], src: "r/Custody wshiju" },
-        { id: "suitcase", name: "Bag for handoffs", posts: 1, src: "r/Divorce iozbxq" },
-        { id: "charger", name: "Phone or tablet charger", posts: 0, src: "not evidenced" }
+        { id: "kid_phone", name: "Their phone and charger", posts: 1, ages: ["teen"], src: "r/Custody wshiju (charger: not evidenced, merged in v1.3)" },
+        { id: "suitcase", name: "Bag for handoffs", posts: 1, src: "r/Divorce iozbxq" }
       ]
     }
   ]
