@@ -13,8 +13,8 @@
    * Sent per event: path = title = event name, event = true, referrer = the ?ref= partner tag
    * (or "" so the browser's referrer URL is never used). We also strip count.js's screen
    * width (s) and page query string (q). No ID, no date. GoatCounter sets no cookies. */
-  var COUNTER_ENABLED = false;
-  var GOATCOUNTER_CODE = ""; // empty = off
+  var COUNTER_ENABLED = true;
+  var GOATCOUNTER_CODE = "dadhouseos"; // empty = off
   var COUNTER_SUPPORTS_PROPS = false; // GoatCounter events carry only a name => came_back_travels_yes / _no
   var GC_SCRIPT = "https://gc.zgo.at/count.js";
   var GC_TIMEOUT_MS = 10000;
