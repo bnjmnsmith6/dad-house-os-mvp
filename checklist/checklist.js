@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  /* ---------- Signals (locked Sep 27): started, finished, marked_travels, came_back ----------
+  /* ---------- Signals (locked Sep 27): started, finished, marked_travels, came_back; plus one pageview per load (Oct 9) ----------
    * Counter: GoatCounter (hosted, free). OFF until BOTH lines below are set:
    *   GOATCOUNTER_CODE = "<site code>"   (the part before .goatcounter.com)
    *   COUNTER_ENABLED = true
@@ -27,7 +27,7 @@
     gc.queue = [];
     q.forEach(function (ev) {
       try {
-        window.goatcounter.count({ path: ev.name, title: ev.name, event: true, referrer: ev.ref || "" });
+        window.goatcounter.count({ path: ev.name, title: ev.name, event: !ev.pageview, referrer: ev.ref || "" });
       } catch (_) {}
     });
   }
@@ -57,12 +57,19 @@
       document.head.appendChild(sc);
     } catch (_) { gcFail(); }
   }
-  function send(name, props) {
+  function send(name, props, pageview) {
     if (!counterOn() || gc.status === "failed") return;
-    gc.queue.push({ name: name, ref: props && props.ref });
+    gc.queue.push({ name: name, ref: props && props.ref, pageview: !!pageview });
     if (gc.status === "ready") gcFlush(); else gcLoad();
   }
   var trackLog = (window.__clTrackLog = []); // in-page only, for QA; never stored or sent
+  var PAGE_PATH = "/checklist/";
+  function trackPageview() { // one plain pageview per load (Oct 9): gives a visit count so "no traffic" and "broken" look different
+    var props = state.ref ? { ref: state.ref } : {};
+    trackLog.push({ name: "pageview", props: props });
+    if (!counterOn()) return;
+    try { send(PAGE_PATH, props, true); } catch (_) {}
+  }
   function track(name, props) {
     props = props || {};
     if (state.ref) props.ref = state.ref;
@@ -526,6 +533,7 @@
 
   function init() {
     readRef();
+    trackPageview();
     bind();
     checkReturn(Date.now());
     if (anyTravels()) goTravels();
